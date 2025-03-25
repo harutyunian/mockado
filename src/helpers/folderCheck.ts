@@ -1,13 +1,11 @@
 import fs from 'fs';
 import path from 'path';
-import clc from 'cli-color'; // For colored console logs
+import clc from 'cli-color';
 import {mockadoEmoji} from '../constant';
 import {validate} from './fileValidate';
 
-// Define the type for the result array
 type Mapping = [string, Record<string, any>];
 
-// Recursive function to read files from directories and subdirectories
 function readDirectory(dirPath: string, jsonDataArray: Mapping[]) {
     const files = fs.readdirSync(dirPath);
 
@@ -16,7 +14,6 @@ function readDirectory(dirPath: string, jsonDataArray: Mapping[]) {
         const stat = fs.lstatSync(filePath);
 
         if (stat.isDirectory()) {
-            // If the item is a directory, recurse into it
             readDirectory(filePath, jsonDataArray);
         } else {
             const ext = path.extname(file).toLowerCase();
@@ -61,10 +58,8 @@ export function getMappings(dir: string = 'mapping'): Mapping[] {
     }
 
     const jsonDataArray: Mapping[] = [];
-    // Start reading the directory (including nested directories)
     readDirectory(absoluteDirPath, jsonDataArray);
 
-    // Pass the result to validation
     validate(jsonDataArray);
 
     return jsonDataArray;
