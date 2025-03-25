@@ -1,0 +1,71 @@
+import fs from 'fs';
+import path from 'path';
+import clc from 'cli-color'; // For colored console logs
+import {mockadoEmoji} from '../constant';
+import {validate} from './fileValidate';
+
+// Define the type for the result array
+type Mapping = [string, Record<string, any>];
+
+// Recursive function to read files from directories and subdirectories
+function readDirectory(dirPath: string, jsonDataArray: Mapping[]) {
+    const files = fs.readdirSync(dirPath);
+
+    files.forEach(file => {
+        const filePath = path.join(dirPath, file);
+        const stat = fs.lstatSync(filePath);
+
+        if (stat.isDirectory()) {
+            // If the item is a directory, recurse into it
+            readDirectory(filePath, jsonDataArray);
+        } else {
+            const ext = path.extname(file).toLowerCase();
+
+            if (!['.json', '.js', '.ts'].includes(ext)) {
+                console.warn(
+                    clc.yellow(`${mockadoEmoji} Warning:`) +
+                    clc.red(` Unsupported file type "${file}". Only .json, .js, and .ts are supported.`)
+                );
+                return;
+            }
+
+            if (ext !== '.json') return;
+
+            try {
+                const data = fs.readFileSync(filePath, 'utf8').trim();
+
+                if (data === '') {
+                    console.warn(
+                        clc.yellow(`${mockadoEmoji} Warning:`) +
+                        clc.red(` "${file}" is empty. Skipping.`)
+                    );
+                    return;
+                }
+
+                const jsonData = JSON.parse(data);
+                jsonDataArray.push([file, jsonData]); // Add to result array
+            } catch (parseErr) {
+                console.error(clc.red(`${mockadoEmoji} Error parsing JSON in "${file}":`), parseErr);
+            }
+        }
+    });
+}
+
+export function getMappings(dir: string = 'mapping'): Mapping[] {
+    const absoluteDirPath = path.join(__dirname, '../', dir);
+    console.log(clc.green(`${mockadoEmoji} Parsing JSON...`));
+
+    if (!fs.existsSync(absoluteDirPath)) {
+        console.error(clc.red(`${mockadoEmoji} Directory does not exist: ${absoluteDirPath}`));
+        return [];
+    }
+
+    const jsonDataArray: Mapping[] = [];
+    // Start reading the directory (including nested directories)
+    readDirectory(absoluteDirPath, jsonDataArray);
+
+    // Pass the result to validation
+    validate(jsonDataArray);
+
+    return jsonDataArray;
+}

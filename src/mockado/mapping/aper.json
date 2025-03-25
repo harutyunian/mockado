@@ -1,0 +1,11 @@
+{
+  "request": {
+    "url": "/api/h3333"
+  },
+  "response": {
+    "bodyFileName": "hello-world-response.json",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
