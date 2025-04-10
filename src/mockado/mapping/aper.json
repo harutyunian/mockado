@@ -2,6 +2,9 @@
   "request": {
     "url": "/api/h3333"
   },
+  "configs": {
+    "pagination": true
+  },
   "response": {
     "bodyFileName": "hello-world-response.json",
     "headers": {

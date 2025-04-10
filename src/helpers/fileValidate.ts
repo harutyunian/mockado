@@ -1,6 +1,10 @@
 import clc from 'cli-color';
 import { mockadoEmoji } from "../constant";
 
+
+// This will validate file content
+// and if something wrong it will be written on console
+
 export function validate(jsonData: [string, any][]): [string, any][] {
     const validatedJsonList = jsonData.filter(([fileName, json])=>{
         const { url, method } = json?.request || {};

@@ -6,6 +6,8 @@ import {validate} from './fileValidate';
 
 type Mapping = [string, Record<string, any>];
 
+// This function will check folders tree and files extension.
+// App will return some  warning message in console if something wrong =);
 function readDirectory(dirPath: string, jsonDataArray: Mapping[]) {
     const files = fs.readdirSync(dirPath);
 
